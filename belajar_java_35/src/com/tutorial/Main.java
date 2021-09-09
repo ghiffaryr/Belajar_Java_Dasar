@@ -9,7 +9,7 @@ public class Main {
         voidFunc("whatever");
         goodMorning("cuk");
         goodMorning("ngab");
-        
+
     }
 
     private static void goodMorning(String name){
