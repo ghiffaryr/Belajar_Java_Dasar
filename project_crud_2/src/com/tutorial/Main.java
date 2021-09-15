@@ -77,7 +77,9 @@ public class Main {
                 System.err.println("Please add data first");
             }
 
-            System.out.println("\n| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
+            System.out.println("\n---------------------------------------------------------------------------------------------------");
+            System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
+            System.out.println("---------------------------------------------------------------------------------------------------");
 
             String data = bufferInput.readLine();
             int dataNo = 0;
@@ -96,6 +98,8 @@ public class Main {
 
                 data = bufferInput.readLine();
             }
+
+            System.out.println("---------------------------------------------------------------------------------------------------");
 
         }
 
