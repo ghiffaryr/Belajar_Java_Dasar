@@ -45,6 +45,7 @@ public class Main {
                     System.out.println("ADD BOOK DATA");
                     System.out.println("=============");
                     addData();
+                    showData();
                     break;
                 case "4":
                     System.out.println("\n================");
