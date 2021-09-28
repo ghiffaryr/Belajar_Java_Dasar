@@ -64,61 +64,62 @@ public class Main {
         }
     }
 
-        private static void showData() throws IOException{
+    private static void showData() throws IOException{
 
-            FileReader fileInput;
-            BufferedReader bufferInput = null;
+        FileReader fileInput;
+        BufferedReader bufferInput = null;
 
-            try {
-                fileInput = new FileReader("database.txt");
-                bufferInput = new BufferedReader(fileInput);
-            } catch (Exception e){
-                System.err.println("Database not found");
-                System.err.println("Please add data first");
-            }
-
-            System.out.println("\n---------------------------------------------------------------------------------------------------");
-            System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
-            System.out.println("---------------------------------------------------------------------------------------------------");
-
-            String data = bufferInput.readLine();
-            int dataNo = 0;
-            while(data != null){
-                dataNo++;
-
-                StringTokenizer stringToken = new StringTokenizer(data, ",");
-
-                stringToken.nextToken();
-                System.out.printf("|%2d  ", dataNo);
-                System.out.printf("|\t%4s  ", stringToken.nextToken());
-                System.out.printf("|\t%-20s  ", stringToken.nextToken());
-                System.out.printf("|\t%-20s  ", stringToken.nextToken());
-                System.out.printf("|\t%s  ", stringToken.nextToken());
-                System.out.printf("\n");
-
-                data = bufferInput.readLine();
-            }
-
-            System.out.println("---------------------------------------------------------------------------------------------------");
-
+        try {
+            fileInput = new FileReader("database.txt");
+            bufferInput = new BufferedReader(fileInput);
+        } catch (Exception e){
+            System.err.println("Database not found");
+            System.err.println("Please add data first");
+            return;
         }
 
-        private static boolean getYesorNo(String message){
-            Scanner terminalInput = new Scanner(System.in);
+        System.out.println("\n---------------------------------------------------------------------------------------------------");
+        System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
+        System.out.println("---------------------------------------------------------------------------------------------------");
+
+        String data = bufferInput.readLine();
+        int dataNo = 0;
+        while(data != null){
+            dataNo++;
+
+            StringTokenizer stringToken = new StringTokenizer(data, ",");
+
+            stringToken.nextToken();
+            System.out.printf("|%2d  ", dataNo);
+            System.out.printf("|\t%4s  ", stringToken.nextToken());
+            System.out.printf("|\t%-20s  ", stringToken.nextToken());
+            System.out.printf("|\t%-20s  ", stringToken.nextToken());
+            System.out.printf("|\t%s  ", stringToken.nextToken());
+            System.out.printf("\n");
+
+            data = bufferInput.readLine();
+        }
+
+        System.out.println("---------------------------------------------------------------------------------------------------");
+
+    }
+
+    private static boolean getYesorNo(String message){
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("\n"+message+" (y/n)? ");
+        String userChoice = terminalInput.next();
+
+        while(!userChoice.equalsIgnoreCase("y") && !userChoice.equalsIgnoreCase("n")) {
+            System.err.println("Your choice is not y nor n");
             System.out.print("\n"+message+" (y/n)? ");
-            String userChoice = terminalInput.next();
-
-            while(!userChoice.equalsIgnoreCase("y") && !userChoice.equalsIgnoreCase("n")) {
-                System.err.println("Your choice is not y nor n");
-                System.out.print("\n"+message+" (y/n)? ");
-                userChoice = terminalInput.next();
-            }
-
-            return userChoice.equalsIgnoreCase("y");
-
+            userChoice = terminalInput.next();
         }
 
-        private static void clearScreen() {
+        return userChoice.equalsIgnoreCase("y");
+
+    }
+
+    private static void clearScreen() {
             try {
                 if(System.getProperty("os.name").contains("Windows")){
                     new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();

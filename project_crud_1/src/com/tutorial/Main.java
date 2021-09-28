@@ -61,28 +61,28 @@ public class Main {
         }
     }
 
-        private static void showData() throws IOException{
-            System.out.println("we show the data here");
+    private static void showData() throws IOException{
+        System.out.println("we show the data here");
 
-            boolean isAdd = getYesorNo("Do you wanna add data");
-        }
+        boolean isAdd = getYesorNo("Do you wanna add data");
+    }
 
-        private static boolean getYesorNo(String message){
-            Scanner terminalInput = new Scanner(System.in);
+    private static boolean getYesorNo(String message){
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("\n"+message+" (y/n)? ");
+        String userChoice = terminalInput.next();
+
+        while(!userChoice.equalsIgnoreCase("y") && !userChoice.equalsIgnoreCase("n")) {
+            System.err.println("Your choice is not y nor n");
             System.out.print("\n"+message+" (y/n)? ");
-            String userChoice = terminalInput.next();
-
-            while(!userChoice.equalsIgnoreCase("y") && !userChoice.equalsIgnoreCase("n")) {
-                System.err.println("Your choice is not y nor n");
-                System.out.print("\n"+message+" (y/n)? ");
-                userChoice = terminalInput.next();
-            }
-
-            return userChoice.equalsIgnoreCase("y");
-
+            userChoice = terminalInput.next();
         }
 
-        private static void clearScreen() {
+        return userChoice.equalsIgnoreCase("y");
+
+    }
+
+    private static void clearScreen() {
             try {
                 if(System.getProperty("os.name").contains("Windows")){
                     new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();

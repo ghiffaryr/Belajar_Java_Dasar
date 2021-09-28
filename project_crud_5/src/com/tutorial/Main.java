@@ -56,6 +56,7 @@ public class Main {
                     System.out.println("\n===============");
                     System.out.println("CLEAN BOOK DATA");
                     System.out.println("===============");
+                    deleteData();
                     break;
                 default:
                     System.err.println("\nYour input not found\nPlease choose [1-5]");
@@ -63,6 +64,76 @@ public class Main {
 
             isContinue = getYesorNo("Do you want to continue");
         }
+    }
+
+    private static void deleteData() throws IOException{
+        //get original database
+        File database = new File("database.txt");
+        FileReader fileInput = new FileReader(database);
+        BufferedReader bufferedInput = new BufferedReader(fileInput);
+
+        //make temporary database
+        File tempDB = new File("tempDB.txt");
+        FileWriter fileOutput = new FileWriter(tempDB);
+        BufferedWriter bufferedOutput = new BufferedWriter(fileOutput);
+
+        //show data
+        System.out.println("Book List");
+        showData();
+
+        //get user input to delete data
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("\nEnter book number to delete: ");
+        int deleteNum = terminalInput.nextInt();
+
+        //looping to read each data line and skip deleted data
+        boolean isFound = false;
+        int entryCount = 0;
+
+        String data = bufferedInput.readLine();
+
+        while(data != null){
+            entryCount++;
+            boolean isDelete = false;
+
+            StringTokenizer st = new StringTokenizer(data,",");
+
+            //show data that will be deleted
+            if(deleteNum == entryCount){
+                System.out.println("\nData that will be deleted is: ");
+                System.out.println("-----------------------------------");
+                System.out.println("Reference       : " + st.nextToken());
+                System.out.println("Year            : " + st.nextToken());
+                System.out.println("Author          : " + st.nextToken());
+                System.out.println("Publisher       : " + st.nextToken());
+                System.out.println("Book Title      : " + st.nextToken());
+
+                isDelete = getYesorNo("Are you sure to delete this data?");
+                isFound = true;
+            }
+
+            if(isDelete){
+                System.out.println("Data successfully deleted");
+            } else {
+                //write data to temporary database
+                bufferedOutput.write(data);
+                bufferedOutput.newLine();
+            }
+            data = bufferedInput.readLine();
+        }
+
+        if(!isFound){
+            System.err.println("Book not found");
+        }
+
+        //write data to file
+        bufferedOutput.flush();
+        //delete original file
+        bufferedInput.close();
+        database.delete();
+        //rename temporary database to original
+        bufferedOutput.close();
+        tempDB.renameTo(database);
     }
 
     private static void addData() throws IOException{
@@ -98,11 +169,11 @@ public class Main {
             String primaryKey = authorWithoutSpace+"_"+year+"_"+entryNumber;
             System.out.println("\nData you will input is");
             System.out.println("----------------------------------------");
-            System.out.println("primary key  : " + primaryKey);
-            System.out.println("year         : " + year);
-            System.out.println("author       : " + author);
-            System.out.println("title        : " + title);
-            System.out.println("publisher    : " + publisher);
+            System.out.println("Primary Key  : " + primaryKey);
+            System.out.println("Year         : " + year);
+            System.out.println("Author       : " + author);
+            System.out.println("Publisher    : " + publisher);
+            System.out.println("Book Title   : " + title);
 
             boolean isAdd = getYesorNo("Do you want to add that data? ");
 
@@ -279,6 +350,7 @@ public class Main {
 
         System.out.println("---------------------------------------------------------------------------------------------------");
 
+        bufferInput.close();
     }
 
     private static boolean getYesorNo(String message){

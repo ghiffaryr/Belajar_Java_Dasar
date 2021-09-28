@@ -51,11 +51,13 @@ public class Main {
                     System.out.println("\n================");
                     System.out.println("CHANGE BOOK DATA");
                     System.out.println("================");
+                    updateData();
                     break;
                 case "5":
                     System.out.println("\n===============");
                     System.out.println("CLEAN BOOK DATA");
                     System.out.println("===============");
+                    deleteData();
                     break;
                 default:
                     System.err.println("\nYour input not found\nPlease choose [1-5]");
@@ -63,6 +65,204 @@ public class Main {
 
             isContinue = getYesorNo("Do you want to continue");
         }
+    }
+
+    private static void updateData() throws IOException{
+        //get original database
+        File database = new File("database.txt");
+        FileReader fileInput = new FileReader(database);
+        BufferedReader bufferedInput = new BufferedReader(fileInput);
+
+        //make temporary database
+        File tempDB = new File("tempDB.txt");
+        FileWriter fileOutput = new FileWriter(tempDB);
+        BufferedWriter bufferedOutput = new BufferedWriter(fileOutput);
+
+        //show data
+        System.out.println("Book List");
+        showData();
+
+        //get user input to update data
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("\nEnter book number to update: ");
+        int updateNum = terminalInput.nextInt();
+
+        //read data
+        String data = bufferedInput.readLine();
+        int entryCount = 0;
+
+        while (data != null){
+            entryCount++;
+
+            StringTokenizer st = new StringTokenizer(data,",");
+
+            //show data that will be updated
+            if (updateNum == entryCount){
+                System.out.println("\nData that will be updated is: ");
+                System.out.println("-----------------------------------");
+                System.out.println("Reference       : " + st.nextToken());
+                System.out.println("Year            : " + st.nextToken());
+                System.out.println("Author          : " + st.nextToken());
+                System.out.println("Publisher       : " + st.nextToken());
+                System.out.println("Book Title      : " + st.nextToken());
+
+                //update data
+                //get input from user
+                String[] fieldData = {"year","author","publisher","book title"};
+                String[] tempData = new String[4];
+
+                st = new StringTokenizer(data,",");
+                String originalData = st.nextToken();
+
+                for(int i = 0; i < fieldData.length ; i++) {
+                    boolean isUpdate = getYesorNo("Do you want to update " + fieldData[i]);
+                    originalData = st.nextToken();
+                    if (isUpdate){
+                        //user input
+                        if (fieldData[i].equalsIgnoreCase("year")){
+                            System.out.print("Enter published year, format=(YYYY): ");
+                            tempData[i] = getYear();
+                        } else {
+                            terminalInput = new Scanner(System.in);
+                            System.out.print("\nEnter new " + fieldData[i] + ": ");
+                            tempData[i] = terminalInput.nextLine();
+                        }
+
+                    } else {
+                        tempData[i] = originalData;
+                    }
+                }
+
+                //show new data to screen
+                st = new StringTokenizer(data,",");
+                st.nextToken();
+                System.out.println("\nYour new data is ");
+                System.out.println("---------------------------------------");
+                System.out.println("Year               : " + st.nextToken() + " --> " + tempData[0]);
+                System.out.println("Author             : " + st.nextToken() + " --> " + tempData[1]);
+                System.out.println("Publisher          : " + st.nextToken() + " --> " + tempData[2]);
+                System.out.println("Book Title         : " + st.nextToken() + " --> " + tempData[3]);
+
+
+                boolean isUpdate = getYesorNo("Are you sure to update the data");
+
+                if (isUpdate){
+
+                    //check the data in database
+                    boolean isExist = checkBook(tempData,false);
+
+                    if(isExist){
+                        System.err.println("Book data is already in database, update process cancelled, \nplease delete the data first");
+                        //copy data
+                        bufferedOutput.write(data);
+
+                    } else {
+                        //format new data to database
+                        String year = tempData[0];
+                        String author = tempData[1];
+                        String publisher = tempData[2];
+                        String title = tempData[3];
+
+                        //create the primary key
+                        long nomorEntry = getEntryEachYear(author, year) + 1;
+
+                        String authorWithoutSpace = author.replaceAll("\\s+","");
+                        String primaryKey = authorWithoutSpace+"_"+year+"_"+nomorEntry;
+
+                        //write data into database
+                        bufferedOutput.write(primaryKey + "," + year + ","+ author +"," + publisher + ","+title);
+                    }
+                } else {
+                    //copy data
+                    bufferedOutput.write(data);
+                }
+            } else {
+                //copy data
+                bufferedOutput.write(data);
+            }
+            bufferedOutput.newLine();
+
+            data = bufferedInput.readLine();
+        }
+
+        //write data to file
+        bufferedOutput.flush();
+        //delete original file
+        bufferedInput.close();
+        database.delete();
+        //rename temporary database to original
+        bufferedOutput.close();
+        tempDB.renameTo(database);
+    }
+
+    private static void deleteData() throws IOException{
+        //get original database
+        File database = new File("database.txt");
+        FileReader fileInput = new FileReader(database);
+        BufferedReader bufferedInput = new BufferedReader(fileInput);
+
+        //make temporary database
+        File tempDB = new File("tempDB.txt");
+        FileWriter fileOutput = new FileWriter(tempDB);
+        BufferedWriter bufferedOutput = new BufferedWriter(fileOutput);
+
+        //show data
+        System.out.println("Book List");
+        showData();
+
+        //get user input to delete data
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("\nEnter book number to delete: ");
+        int deleteNum = terminalInput.nextInt();
+
+        //looping to read each data line and skip deleted data
+        boolean isFound = false;
+        int entryCount = 0;
+
+        String data = bufferedInput.readLine();
+
+        while(data != null){
+            entryCount++;
+            boolean isDelete = false;
+
+            StringTokenizer st = new StringTokenizer(data,",");
+
+            //show data that will be deleted
+            if(deleteNum == entryCount){
+                System.out.println("\nData that will be deleted is: ");
+                System.out.println("-----------------------------------");
+                System.out.println("Reference       : " + st.nextToken());
+                System.out.println("Year            : " + st.nextToken());
+                System.out.println("Author          : " + st.nextToken());
+                System.out.println("Publisher       : " + st.nextToken());
+                System.out.println("Book Title      : " + st.nextToken());
+
+                isDelete = getYesorNo("Are you sure to delete this data?");
+                isFound = true;
+            }
+
+            if(isDelete){
+                System.out.println("Data successfully deleted");
+            } else {
+                //write data to temporary database
+                bufferedOutput.write(data);
+                bufferedOutput.newLine();
+            }
+            data = bufferedInput.readLine();
+        }
+
+        if(!isFound){
+            System.err.println("Book not found");
+        }
+
+        //write data into file
+        bufferedOutput.flush();
+        //delete original file
+        bufferedInput.close();
+        database.delete();
+        //rename temporary database to original
+        bufferedOutput.close();
+        tempDB.renameTo(database);
     }
 
     private static void addData() throws IOException{
@@ -98,11 +298,11 @@ public class Main {
             String primaryKey = authorWithoutSpace+"_"+year+"_"+entryNumber;
             System.out.println("\nData you will input is");
             System.out.println("----------------------------------------");
-            System.out.println("primary key  : " + primaryKey);
-            System.out.println("year         : " + year);
-            System.out.println("author       : " + author);
-            System.out.println("title        : " + title);
-            System.out.println("publisher    : " + publisher);
+            System.out.println("Primary Key  : " + primaryKey);
+            System.out.println("Year         : " + year);
+            System.out.println("Author       : " + author);
+            System.out.println("Publisher    : " + publisher);
+            System.out.println("Book Title   : " + title);
 
             boolean isAdd = getYesorNo("Do you want to add that data? ");
 
@@ -144,6 +344,8 @@ public class Main {
 
             data = bufferInput.readLine();
         }
+
+        bufferInput.close();
 
         return entry;
     }
@@ -236,6 +438,8 @@ public class Main {
             System.out.println("---------------------------------------------------------------------------------------------------");
         }
 
+        bufferInput.close();
+
         return isExist;
 
     }
@@ -279,6 +483,7 @@ public class Main {
 
         System.out.println("---------------------------------------------------------------------------------------------------");
 
+        bufferInput.close();
     }
 
     private static boolean getYesorNo(String message){

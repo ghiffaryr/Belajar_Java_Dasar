@@ -65,90 +65,49 @@ public class Main {
         }
     }
 
-        private static void findData() throws IOException{
-            //read database to check exist or not
-            try{
-                File file = new File("database.txt");
-            } catch (Exception e){
-                System.err.println("Database not found");
-                System.err.println("Please add the data first");
-                return;
-            }
-
-            //take keyword from user
-            Scanner terminalInput = new Scanner(System.in);
-            System.out.print("Enter keyword to find the book: ");
-            String findString = terminalInput.nextLine();
-            String[] keywords = findString.split("\\s+");
-
-            //check keyword on database
-            checkBook(keywords);
-
+    private static void findData() throws IOException{
+        //read database to check exist or not
+        try{
+            File file = new File("database.txt");
+        } catch (Exception e){
+            System.err.println("Database not found");
+            System.err.println("Please add the data first");
+            return;
         }
 
-        private static void checkBook(String[] keywords) throws IOException{
+        //take keyword from user
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("Enter keyword to find the book: ");
+        String findString = terminalInput.nextLine();
+        String[] keywords = findString.split("\\s+");
 
-            FileReader fileInput = new FileReader("database.txt");
-            BufferedReader bufferInput = new BufferedReader(fileInput);
+        //check keyword on database
+        checkBook(keywords);
 
-            System.out.println("\n---------------------------------------------------------------------------------------------------");
-            System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
-            System.out.println("---------------------------------------------------------------------------------------------------");
+    }
 
-            String data = bufferInput.readLine();
-            boolean isExist;
-            int dataNo = 0;
-            while(data != null){
+    private static void checkBook(String[] keywords) throws IOException{
 
-                //check keywords in line
-                isExist = true;
+        FileReader fileInput = new FileReader("database.txt");
+        BufferedReader bufferInput = new BufferedReader(fileInput);
 
-                for(String keyword:keywords){
-                    isExist = isExist && data.toLowerCase().contains(keyword.toLowerCase());
-                }
+        System.out.println("\n---------------------------------------------------------------------------------------------------");
+        System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
+        System.out.println("---------------------------------------------------------------------------------------------------");
 
-                if(isExist) {
-                    dataNo++;
+        String data = bufferInput.readLine();
+        boolean isExist;
+        int dataNo = 0;
+        while(data != null){
 
-                    StringTokenizer stringToken = new StringTokenizer(data, ",");
+            //check keywords in line
+            isExist = true;
 
-                    stringToken.nextToken();
-                    System.out.printf("|%2d  ", dataNo);
-                    System.out.printf("|\t%4s  ", stringToken.nextToken());
-                    System.out.printf("|\t%-20s  ", stringToken.nextToken());
-                    System.out.printf("|\t%-20s  ", stringToken.nextToken());
-                    System.out.printf("|\t%s  ", stringToken.nextToken());
-                    System.out.printf("\n");
-                }
-
-                data = bufferInput.readLine();
+            for(String keyword:keywords){
+                isExist = isExist && data.toLowerCase().contains(keyword.toLowerCase());
             }
 
-            System.out.println("---------------------------------------------------------------------------------------------------");
-
-
-        }
-
-        private static void showData() throws IOException{
-
-            FileReader fileInput;
-            BufferedReader bufferInput = null;
-
-            try {
-                fileInput = new FileReader("database.txt");
-                bufferInput = new BufferedReader(fileInput);
-            } catch (Exception e){
-                System.err.println("Database not found");
-                System.err.println("Please add data first");
-            }
-
-            System.out.println("\n---------------------------------------------------------------------------------------------------");
-            System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
-            System.out.println("---------------------------------------------------------------------------------------------------");
-
-            String data = bufferInput.readLine();
-            int dataNo = 0;
-            while(data != null){
+            if(isExist) {
                 dataNo++;
 
                 StringTokenizer stringToken = new StringTokenizer(data, ",");
@@ -160,38 +119,80 @@ public class Main {
                 System.out.printf("|\t%-20s  ", stringToken.nextToken());
                 System.out.printf("|\t%s  ", stringToken.nextToken());
                 System.out.printf("\n");
-
-                data = bufferInput.readLine();
             }
 
-            System.out.println("---------------------------------------------------------------------------------------------------");
-
+            data = bufferInput.readLine();
         }
 
-        private static boolean getYesorNo(String message){
-            Scanner terminalInput = new Scanner(System.in);
+        System.out.println("---------------------------------------------------------------------------------------------------");
+
+
+    }
+
+    private static void showData() throws IOException{
+
+        FileReader fileInput;
+        BufferedReader bufferInput = null;
+
+        try {
+            fileInput = new FileReader("database.txt");
+            bufferInput = new BufferedReader(fileInput);
+        } catch (Exception e){
+            System.err.println("Database not found");
+            System.err.println("Please add data first");
+            return;
+        }
+
+        System.out.println("\n---------------------------------------------------------------------------------------------------");
+        System.out.println("| No |\tYear  |\tAuthor                |\tPublisher             |\tBook Title");
+        System.out.println("---------------------------------------------------------------------------------------------------");
+
+        String data = bufferInput.readLine();
+        int dataNo = 0;
+        while(data != null){
+            dataNo++;
+
+            StringTokenizer stringToken = new StringTokenizer(data, ",");
+
+            stringToken.nextToken();
+            System.out.printf("|%2d  ", dataNo);
+            System.out.printf("|\t%4s  ", stringToken.nextToken());
+            System.out.printf("|\t%-20s  ", stringToken.nextToken());
+            System.out.printf("|\t%-20s  ", stringToken.nextToken());
+            System.out.printf("|\t%s  ", stringToken.nextToken());
+            System.out.printf("\n");
+
+            data = bufferInput.readLine();
+        }
+
+        System.out.println("---------------------------------------------------------------------------------------------------");
+
+    }
+
+    private static boolean getYesorNo(String message){
+        Scanner terminalInput = new Scanner(System.in);
+        System.out.print("\n"+message+" (y/n)? ");
+        String userChoice = terminalInput.next();
+
+        while(!userChoice.equalsIgnoreCase("y") && !userChoice.equalsIgnoreCase("n")) {
+            System.err.println("Your choice is not y nor n");
             System.out.print("\n"+message+" (y/n)? ");
-            String userChoice = terminalInput.next();
-
-            while(!userChoice.equalsIgnoreCase("y") && !userChoice.equalsIgnoreCase("n")) {
-                System.err.println("Your choice is not y nor n");
-                System.out.print("\n"+message+" (y/n)? ");
-                userChoice = terminalInput.next();
-            }
-
-            return userChoice.equalsIgnoreCase("y");
-
+            userChoice = terminalInput.next();
         }
 
-        private static void clearScreen() {
-            try {
-                if(System.getProperty("os.name").contains("Windows")){
-                    new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();
-                } else {
-                    System.out.print("\033\143");
-                }
-            } catch (Exception e) {
-                System.err.println("cannot clear the screen");
+        return userChoice.equalsIgnoreCase("y");
+
+    }
+
+    private static void clearScreen() {
+        try {
+            if(System.getProperty("os.name").contains("Windows")){
+                new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033\143");
             }
+        } catch (Exception e) {
+            System.err.println("cannot clear the screen");
         }
+    }
 }
